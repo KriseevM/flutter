@@ -133,6 +133,7 @@ class SearchAnchor extends StatefulWidget {
     required this.suggestionsBuilder,
     this.textInputAction,
     this.keyboardType,
+    this.viewOnBackButtonClick,
   });
 
   /// Create a [SearchAnchor] that has a [SearchBar] which opens a search view.
@@ -335,6 +336,8 @@ class SearchAnchor extends StatefulWidget {
   /// Defaults to the default value specified in [TextField].
   final TextInputType? keyboardType;
 
+  final ValueChanged<String>? viewOnBackButtonClick;
+
   @override
   State<SearchAnchor> createState() => _SearchAnchorState();
 }
@@ -410,6 +413,7 @@ class _SearchAnchorState extends State<SearchAnchor> {
       capturedThemes: InheritedTheme.capture(from: context, to: navigator.context),
       textInputAction: widget.textInputAction,
       keyboardType: widget.keyboardType,
+      onBackButtonClick: widget.viewOnBackButtonClick
     ));
   }
 
@@ -485,6 +489,7 @@ class _SearchViewRoute extends PopupRoute<_SearchViewRoute> {
     required this.capturedThemes,
     this.textInputAction,
     this.keyboardType,
+    this.onBackButtonClick,
   });
 
   final ValueChanged<String>? viewOnChanged;
@@ -512,6 +517,7 @@ class _SearchViewRoute extends PopupRoute<_SearchViewRoute> {
   final CapturedThemes capturedThemes;
   final TextInputAction? textInputAction;
   final TextInputType? keyboardType;
+  final ValueChanged<String>? onBackButtonClick;
 
   @override
   Color? get barrierColor => Colors.transparent;
@@ -657,6 +663,7 @@ class _SearchViewRoute extends PopupRoute<_SearchViewRoute> {
                 textCapitalization: textCapitalization,
                 textInputAction: textInputAction,
                 keyboardType: keyboardType,
+                onBackButtonClick: onBackButtonClick,
               ),
             ),
           );
@@ -695,6 +702,7 @@ class _ViewContent extends StatefulWidget {
     required this.suggestionsBuilder,
     this.textInputAction,
     this.keyboardType,
+    this.onBackButtonClick,
   });
 
   final ValueChanged<String>? viewOnChanged;
@@ -721,6 +729,7 @@ class _ViewContent extends StatefulWidget {
   final SuggestionsBuilder suggestionsBuilder;
   final TextInputAction? textInputAction;
   final TextInputType? keyboardType;
+  final ValueChanged<String>? onBackButtonClick;
 
   @override
   State<_ViewContent> createState() => _ViewContentState();
@@ -796,7 +805,10 @@ class _ViewContentState extends State<_ViewContent> {
   Widget build(BuildContext context) {
     final Widget defaultLeading = IconButton(
       icon: const Icon(Icons.arrow_back),
-      onPressed: () { Navigator.of(context).pop(); },
+      onPressed: () { 
+        widget.onBackButtonClick?.call(_controller.text);
+        Navigator.of(context).pop(); 
+      },
       style: const ButtonStyle(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
     );
 
